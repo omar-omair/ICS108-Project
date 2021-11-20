@@ -6,13 +6,6 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch TestClass",
-            "request": "launch",
-            "mainClass": "project.TestClass",
-            "projectName": "project_c2a27ac"
-        },
-        {
-            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -20,17 +13,23 @@
         {
             "type": "java",
             "name": "Launch App",
-            "vmArgs": "--module-path /Users/omaro/Desktop/Test/javafx-sdk-17.0.0.1/lib --add-modules javafx.controls,javafx.fxml",
             "request": "launch",
-            "mainClass": "App",
-            "projectName": "project_c2a27ac"
+            "mainClass": "project.App",
+            "projectName": "project_c2a27ac",
+            "vmArgs": "--module-path /Users/omaro/Desktop/Test/javafx-sdk-17.0.0.1/lib --add-modules javafx.controls,javafx.fxml",
         },
         {
             "type": "java",
             "name": "Launch TestClass",
             "request": "launch",
-            "mainClass": "TestClass",
+            "mainClass": "project.TestClass",
             "projectName": "project_c2a27ac"
+        },
+        {
+            "type": "java",
+            "name": "Launch App(1)",
+            "request": "launch",
+            "mainClass": "App"
         }
     ]
 }
