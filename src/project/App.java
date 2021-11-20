@@ -38,6 +38,8 @@ public class App extends Application{
     Pane panel = new Pane();
     Label numberLabel = new Label("");
     int studentCount = 0;
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    
 
     public void start(Stage stage) throws Exception{
         registerSystem.setFont(new Font(40));
@@ -54,12 +56,12 @@ public class App extends Application{
         BorderPane.setMargin(buttonBox, new Insets(12,12,70,12));
         Scene main = new Scene(borderPane);
         
-        
-        
         FileInputStream fis = new FileInputStream("res\\Registration.dat");
         ObjectInputStream ois = new ObjectInputStream(fis);
         coursesList = (ArrayList<Course>) ois.readObject();
         studentsList = (ArrayList<Student>) ois.readObject();
+
+
         Scene courses = new Scene(panel);
         courseList.setItems(FXCollections.observableArrayList(coursesList));
         courseList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -145,8 +147,9 @@ public class App extends Application{
         Button back2 = new Button("Back");
         Button next2 = new Button("Next >");
         Button pervious2 = new Button("< Pervious");
+        Button search2 = new Button("Search");
         HBox buttonsbox = new HBox(10);
-        buttonsbox.getChildren().addAll(back2,pervious2,next2,register,drop);
+        buttonsbox.getChildren().addAll(back2,pervious2,next2,register,drop,search2);
         grid.add(buttonsbox,1,6);
 
 
@@ -163,6 +166,17 @@ public class App extends Application{
             stage.setHeight(650);
             studentCount = 0;
             getStudentDetails();
+        });
+
+        save.setOnMouseClicked(e -> {
+            try(FileOutputStream fos = new FileOutputStream("res\\Registration.dat");
+            ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+                oos.writeObject(coursesList);
+                oos.writeObject(studentsList);
+            }
+            catch(IOException ex) {
+                System.out.println(ex);
+            }
         });
 
         back.setOnAction(e -> {
@@ -190,7 +204,9 @@ public class App extends Application{
                     break;
                 }
                 else if(i == coursesList.size() - 1) {
-                    
+                    alert.setHeaderText("Course not found");
+                    alert.setContentText("Try again with a different input or pick a course from the list");
+                    alert.show();
                 }
             }
 
@@ -212,6 +228,45 @@ public class App extends Application{
                 studentCount--;
             }
             getStudentDetails();
+        });
+
+        search2.setOnMouseClicked(e -> {
+            String searched = studentID.getText();
+            for (int i = 0; i < studentsList.size(); i++) {
+                if(searched.equals(studentsList.get(i).getStudID())) {
+                    studentCount = i;
+                    getStudentDetails();
+                    break;
+                }
+                else if(i == studentsList.size() - 1) {
+                    alert.setHeaderText("Student not found");
+                    alert.setContentText("Try again with a different input");
+                    alert.show();
+                }
+            }
+        });
+
+        register.setOnMouseClicked(e -> {
+            Course registeredCourse = notRegistered.getSelectionModel().getSelectedItem();
+            if(registeredCourse.getAvailableSeats() > 0) {
+                registeredCourse.setAvailableSeats(registeredCourse.getAvailableSeats() - 1);
+                notRegisteredCourseList.remove(registeredCourse);
+                studentsList.get(studentCount).getCourses().add(registeredCourse);
+                getStudentDetails();
+            }
+            else {
+                alert.setHeaderText("Closed Course");
+                alert.setContentText("Try a different course");
+                alert.show();
+            }
+        });
+
+        drop.setOnMouseClicked(e -> {
+            Course droppedCourse = registered.getSelectionModel().getSelectedItem();
+            studentsList.get(studentCount).getCourses().remove(droppedCourse);
+            droppedCourse.setAvailableSeats(droppedCourse.getAvailableSeats() + 1);
+            getStudentDetails();
+
         });
 
         stage.setScene(main);
