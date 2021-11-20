@@ -26,11 +26,17 @@ public class App extends Application{
     TextField courseLocation = new TextField();
     TextField courseTime = new TextField();
     TextField courseStatus = new TextField();
+    TextField studentID = new TextField();
     ArrayList<Course> coursesList = new ArrayList<Course>();
     ArrayList<Student> studentsList = new ArrayList<Student>();
+    ArrayList<Course> notRegisteredCourseList = new ArrayList<>();
+    ArrayList<Course> registeredCourseList = new ArrayList<>();
+    ListView<Course> registered = new ListView<>();
+    ComboBox<Course> notRegistered = new ComboBox<>();
     ListView<String> studentList = new ListView<>();
     Pane panel = new Pane();
     Label numberLabel = new Label("");
+    int studentCount = 0;
 
     public void start(Stage stage) throws Exception{
         registerSystem.setFont(new Font(40));
@@ -128,9 +134,7 @@ public class App extends Application{
         Scene studentDetails = new Scene(grid);
         Label[] labels2 = {new Label("Student ID"), new Label("Registered Courses"), 
                            new Label("Not Registered Courses")};
-        TextField studentID = new TextField();
-        ListView registered = new ListView();
-        ComboBox notRegistered = new ComboBox();
+        notRegistered.setPrefWidth(410);
         grid.addColumn(1,studentID,registered,notRegistered);
         for (int i = 0; i < labels2.length; i++) {
             grid.addColumn(0,labels2[i]);
@@ -156,6 +160,8 @@ public class App extends Application{
             stage.setScene(studentDetails);
             stage.setWidth(650);
             stage.setHeight(650);
+            studentCount = 0;
+            getStudentDetails();
         });
 
         back.setOnAction(e -> {
@@ -175,11 +181,37 @@ public class App extends Application{
             studentList.setItems(FXCollections.observableArrayList(empty));
         });
 
-        back2.setOnAction(e -> {
+        pervious.setOnMouseClicked(e -> {
+            if(courseList.getSelectionModel().getSelectedIndex() > 0) {
+                courseList.getSelectionModel().select(courseList.getSelectionModel().getSelectedIndex() - 1);
+            }
+        });
+
+        next.setOnMouseClicked(e -> {
+            if(courseList.getSelectionModel().getSelectedIndex() < coursesList.size() - 1) {
+                courseList.getSelectionModel().select(courseList.getSelectionModel().getSelectedIndex() + 1);
+            }
+        });
+
+
+        back2.setOnMouseClicked(e -> {
             stage.setScene(main);
             stage.setWidth(700);
             stage.setHeight(600);
             stage.setTitle("main");
+        });
+
+        next2.setOnMouseClicked(e -> {
+            if(studentCount < studentsList.size() - 1) {
+                studentCount++;
+            }
+            getStudentDetails();
+        });
+        pervious2.setOnMouseClicked(e -> {
+            if(studentCount > 0) {
+                studentCount--;
+            }
+            getStudentDetails();
         });
 
         stage.setScene(main);
@@ -187,7 +219,20 @@ public class App extends Application{
         stage.setHeight(600);
         stage.show();
     }
-    
+
+    void getStudentDetails() {
+        notRegisteredCourseList.clear();
+        studentID.setText(studentsList.get(studentCount).getStudID());
+        registeredCourseList = studentsList.get(studentCount).getCourses();
+        for(int i = 0; i < coursesList.size(); i++){
+            if(!(registeredCourseList.contains(coursesList.get(i)))){
+                notRegisteredCourseList.add(coursesList.get(i));
+            }
+        }
+        notRegistered.setItems(FXCollections.observableArrayList(notRegisteredCourseList));
+        registered.setItems(FXCollections.observableArrayList(registeredCourseList));
+    }
+
     public static void main(String[] args) {
         launch();
     }
