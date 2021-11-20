@@ -32,6 +32,7 @@ public class App extends Application{
     ArrayList<Course> notRegisteredCourseList = new ArrayList<>();
     ArrayList<Course> registeredCourseList = new ArrayList<>();
     ListView<Course> registered = new ListView<>();
+    ListView<Course> courseList = new ListView<>();
     ComboBox<Course> notRegistered = new ComboBox<>();
     ListView<String> studentList = new ListView<>();
     Pane panel = new Pane();
@@ -60,7 +61,7 @@ public class App extends Application{
         coursesList = (ArrayList<Course>) ois.readObject();
         studentsList = (ArrayList<Student>) ois.readObject();
         Scene courses = new Scene(panel);
-        ListView<Course> courseList = new ListView<>(FXCollections.observableArrayList(coursesList));
+        courseList.setItems(FXCollections.observableArrayList(coursesList));
         courseList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         GridPane details = new GridPane();
         details.setHgap(10);
@@ -165,20 +166,8 @@ public class App extends Application{
         });
 
         back.setOnAction(e -> {
-            stage.setScene(main);
-            stage.setWidth(700);
-            stage.setHeight(600);
-            stage.setTitle("main");
-            ArrayList<String> empty = new ArrayList<String>();
-            courseList.getSelectionModel().clearSelection();
-            courseID.setText("");
-            courseName.setText("");
-            courseDays.setText("");
-            courseTime.setText("");
-            courseStatus.setText("");
-            courseLocation.setText("");
-            numberLabel.setText("");
-            studentList.setItems(FXCollections.observableArrayList(empty));
+            setToMain(stage, main);
+            resetCourseMenu();
         });
 
         pervious.setOnMouseClicked(e -> {
@@ -193,12 +182,23 @@ public class App extends Application{
             }
         });
 
+        search.setOnMouseClicked(e -> {
+            String searched = courseID.getText();
+            for (int i = 0; i < coursesList.size(); i++) {
+                if(searched.equals(coursesList.get(i).getCourseID())) {
+                    courseList.getSelectionModel().select(i);
+                    break;
+                }
+                else if(i == coursesList.size() - 1) {
+                    
+                }
+            }
+
+        });
+
 
         back2.setOnMouseClicked(e -> {
-            stage.setScene(main);
-            stage.setWidth(700);
-            stage.setHeight(600);
-            stage.setTitle("main");
+            setToMain(stage,main);
         });
 
         next2.setOnMouseClicked(e -> {
@@ -231,6 +231,26 @@ public class App extends Application{
         }
         notRegistered.setItems(FXCollections.observableArrayList(notRegisteredCourseList));
         registered.setItems(FXCollections.observableArrayList(registeredCourseList));
+    }
+
+    void resetCourseMenu() {
+        ArrayList<String> empty = new ArrayList<String>();
+        courseList.getSelectionModel().clearSelection();
+        courseID.setText("");
+        courseName.setText("");
+        courseDays.setText("");
+        courseTime.setText("");
+        courseStatus.setText("");
+        courseLocation.setText("");
+        numberLabel.setText("");
+        studentList.setItems(FXCollections.observableArrayList(empty));
+    }
+
+    void setToMain(Stage stage, Scene main) {
+        stage.setScene(main);
+        stage.setWidth(700);
+        stage.setHeight(600);
+        stage.setTitle("main");
     }
 
     public static void main(String[] args) {
