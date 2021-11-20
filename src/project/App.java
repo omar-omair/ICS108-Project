@@ -1,6 +1,7 @@
 package project;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
@@ -13,12 +14,15 @@ import javafx.scene.input.KeyEvent;
 import javafx.geometry.*;
 import javafx.event.*;
 import javafx.scene.shape.*;
+import java.util.*;
+import java.io.FileInputStream;
+import java.io.*;
 
 public class App extends Application{
     private Label registerSystem = new Label("Registration System");
     
     
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception{
         registerSystem.setFont(new Font(40));
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(registerSystem);
@@ -32,11 +36,14 @@ public class App extends Application{
         borderPane.setBottom(buttonBox);
         BorderPane.setMargin(buttonBox, new Insets(12,12,70,12));
         Scene main = new Scene(borderPane);
-
+        ArrayList<Course> coursesList = new ArrayList<Course>();
+        FileInputStream fis = new FileInputStream("res\\Registration.dat");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        coursesList = (ArrayList<Course>) ois.readObject();
         
         Pane panel = new Pane();
         Scene courses = new Scene(panel);
-        ListView courseList = new ListView();
+        ListView<Course> courseList = new ListView<>(FXCollections.observableArrayList(coursesList));
         ListView studentsList = new ListView();
         GridPane details = new GridPane();
         details.setHgap(10);
@@ -121,6 +128,7 @@ public class App extends Application{
         stage.setHeight(600);
         stage.show();
     }
+    
     public static void main(String[] args) {
         launch();
     }
