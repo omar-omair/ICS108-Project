@@ -1,3 +1,5 @@
+package project;
+
 import java.io.Serializable;
 
 // Do not add/remove methods/variables to/from this calss
