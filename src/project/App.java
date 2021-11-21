@@ -7,13 +7,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.scene.image.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.geometry.*;
-import javafx.event.*;
-import javafx.scene.shape.*;
 import java.util.*;
 import java.io.FileInputStream;
 import java.io.*;
@@ -41,10 +35,9 @@ public class App extends Application{
     Alert alert = new Alert(Alert.AlertType.ERROR);
     
 
-    public void start(Stage stage) throws Exception{
+    public void start(Stage stage) {
         registerSystem.setFont(new Font(40));
         BorderPane borderPane = new BorderPane();
-        borderPane.setCenter(registerSystem);
         borderPane.setCenter(registerSystem);
         HBox buttonBox = new HBox(10);
         Button course = new Button("View course");
@@ -55,11 +48,16 @@ public class App extends Application{
         borderPane.setBottom(buttonBox);
         BorderPane.setMargin(buttonBox, new Insets(12,12,70,12));
         Scene main = new Scene(borderPane);
-        
-        FileInputStream fis = new FileInputStream("res\\Registration.dat");
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        coursesList = (ArrayList<Course>) ois.readObject();
-        studentsList = (ArrayList<Student>) ois.readObject();
+
+        try(FileInputStream fis = new FileInputStream("res\\Registration.dat");
+            ObjectInputStream ois = new ObjectInputStream(fis))
+        {
+            coursesList = (ArrayList<Course>) ois.readObject();
+            studentsList = (ArrayList<Student>) ois.readObject();
+        }
+        catch(IOException | ClassNotFoundException e) {
+            System.out.println(e);
+        }
 
 
         Scene courses = new Scene(panel);
@@ -73,10 +71,10 @@ public class App extends Application{
                          new Label("Status")};
         TextField[] fields = {courseID,courseName,courseDays,courseLocation,courseTime,courseStatus};
         Button back = new Button("Back");
-        Button pervious = new Button("< Pervious");
+        Button previous = new Button("< previous");
         Button next = new Button("Next >");
         Button search = new Button("Search");
-        Button[] buttons = {back, pervious, next, search};
+        Button[] buttons = {back, previous, next, search};
         HBox buttonHbox = new HBox(10);
         for(int i=0; i<labels.length; i++){
            details.addColumn(0, labels[i]);
@@ -146,10 +144,10 @@ public class App extends Application{
         Button drop = new Button("Drop");
         Button back2 = new Button("Back");
         Button next2 = new Button("Next >");
-        Button pervious2 = new Button("< Pervious");
+        Button previous2 = new Button("< previous");
         Button search2 = new Button("Search");
         HBox buttonsbox = new HBox(10);
-        buttonsbox.getChildren().addAll(back2,pervious2,next2,register,drop,search2);
+        buttonsbox.getChildren().addAll(back2,previous2,next2,register,drop,search2);
         grid.add(buttonsbox,1,6);
 
 
@@ -184,7 +182,7 @@ public class App extends Application{
             resetCourseMenu();
         });
 
-        pervious.setOnMouseClicked(e -> {
+        previous.setOnMouseClicked(e -> {
             if(courseList.getSelectionModel().getSelectedIndex() > 0) {
                 courseList.getSelectionModel().select(courseList.getSelectionModel().getSelectedIndex() - 1);
             }
@@ -223,7 +221,7 @@ public class App extends Application{
             }
             getStudentDetails();
         });
-        pervious2.setOnMouseClicked(e -> {
+        previous2.setOnMouseClicked(e -> {
             if(studentCount > 0) {
                 studentCount--;
             }
