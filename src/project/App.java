@@ -12,18 +12,19 @@ import java.io.FileInputStream;
 import java.io.*;
 
 public class App extends Application{
+
     private Label registerSystem = new Label("Registration System");
     static ArrayList<Course> coursesList = new ArrayList<Course>();
     static ArrayList<Student> studentsList = new ArrayList<Student>();
     static Alert alert = new Alert(Alert.AlertType.ERROR);
     static Stage primaryStage;
-    static Scene primaryScene;
     static BorderPane mainBorderPane = new BorderPane();
+    static Scene primaryScene = new Scene(mainBorderPane);
     StudentPane studentPane = new StudentPane();
 
 
     public void start(Stage stage) {
-        primaryScene = new Scene(mainBorderPane);
+        // Making the main pane and designing its layout.
         primaryStage = stage;
         registerSystem.setFont(new Font(40));
         mainBorderPane.setCenter(registerSystem);
@@ -36,6 +37,7 @@ public class App extends Application{
         mainBorderPane.setBottom(buttonBox);
         BorderPane.setMargin(buttonBox, new Insets(12,12,70,12));
 
+        // Reading the data from the binary file.
         try(FileInputStream fis = new FileInputStream("res\\Registration.dat");
             ObjectInputStream ois = new ObjectInputStream(fis))
         {
@@ -48,16 +50,18 @@ public class App extends Application{
 
         CoursePane coursePane = new CoursePane();
 
+        //Button Handlers for course, student details, and save buttons.
         course.setOnAction(e -> {
-            setToCourse(primaryStage,primaryScene,coursePane);
-            coursePane.getInfo();
+            setToCourse(primaryStage,primaryScene,coursePane); // changing the pane.
         });
 
         student.setOnAction(e -> {
-            setToStudent(primaryStage,primaryScene,studentPane);
+            setToStudent(primaryStage,primaryScene,studentPane); // changing the pane.
         });
 
         save.setOnMouseClicked(e -> {
+            
+            // Writing the new data to the binary file.
             try(FileOutputStream fos = new FileOutputStream("res\\Registration.dat");
             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
                 oos.writeObject(coursesList);
@@ -68,13 +72,14 @@ public class App extends Application{
             }
         });
 
-
+        // setting the stage.
         stage.setScene(primaryScene);
         stage.setWidth(700);
         stage.setHeight(600);
         stage.show();
     }
 
+    // this method is used to return to the main pane.
     static void setToMain(Stage stage, Scene scene, BorderPane pane) {
         scene.setRoot(pane);
         stage.setWidth(700);
@@ -83,6 +88,7 @@ public class App extends Application{
         
     }
 
+    // this method is used to change to the Course pane
     void setToCourse(Stage stage, Scene scene, CoursePane pane) {
         scene.setRoot(pane);
         stage.setWidth(900);
@@ -90,13 +96,14 @@ public class App extends Application{
         stage.setTitle("Courses");
     }
 
+    // this method is used to change to the Student pane.
     void setToStudent(Stage stage, Scene scene, StudentPane pane) {
         scene.setRoot(pane);
         stage.setWidth(650);
         stage.setHeight(650);
         stage.setTitle("Student");
-        studentPane.studentCount = 0;
-        studentPane.getStudentDetails();
+        studentPane.studentCount = 0; // to start from the first student.
+        studentPane.getStudentDetails(); // getting the info from the ArrayList.
     }
 
    

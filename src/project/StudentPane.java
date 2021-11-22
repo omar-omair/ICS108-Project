@@ -10,12 +10,13 @@ public class StudentPane extends GridPane {
     
     private ArrayList<Course> notRegisteredCourseList = new ArrayList<>();
     private ArrayList<Course> registeredCourseList = new ArrayList<>();
-    private ListView<Course> registered = new ListView<>();
+    private ListView<Course> registeredCourses = new ListView<>();
     private TextField studentID = new TextField();
-    private ComboBox<Course> notRegistered = new ComboBox<>();
-    int studentCount = 0;
+    private ComboBox<Course> nonRegisteredCourses = new ComboBox<>();
+    int studentCount = 0; // the index of the current student.
 
     StudentPane() {
+
         this.setVgap(15);
         this.setHgap(10);
         this.setPadding(new Insets(10, 10, 10, 40));
@@ -23,9 +24,9 @@ public class StudentPane extends GridPane {
         Label[] labels = {new Label("Student ID"), new Label("Registered Courses"), 
                            new Label("Not Registered Courses")};
 
-        notRegistered.setPrefWidth(410);
+        nonRegisteredCourses.setPrefWidth(410);
 
-        this.addColumn(1,studentID,registered,notRegistered);
+        this.addColumn(1,studentID,registeredCourses,nonRegisteredCourses);
 
         for (int i = 0; i < labels.length; i++) {
             this.addColumn(0,labels[i]);
@@ -42,6 +43,7 @@ public class StudentPane extends GridPane {
         buttonsHBox.getChildren().addAll(back,previous,next,register,drop,search);
         this.add(buttonsHBox,1,6);
 
+        // button handlers for back, previous, next, search, register, and drop.
         back.setOnMouseClicked(e -> {
             App.setToMain(App.primaryStage,App.primaryScene,App.mainBorderPane);
         });
@@ -61,6 +63,7 @@ public class StudentPane extends GridPane {
 
         search.setOnMouseClicked(e -> {
             String searched = studentID.getText();
+             // checking if there is a match with any of the student ids.
             for (int i = 0; i < App.studentsList.size(); i++) {
                 if(searched.equals(App.studentsList.get(i).getStudID())) {
                     studentCount = i;
@@ -76,7 +79,7 @@ public class StudentPane extends GridPane {
         });
 
         register.setOnMouseClicked(e -> {
-            Course registeredCourse = notRegistered.getSelectionModel().getSelectedItem();
+            Course registeredCourse = nonRegisteredCourses.getSelectionModel().getSelectedItem();
             if(registeredCourse.getAvailableSeats() > 0) {
                 registeredCourse.setAvailableSeats(registeredCourse.getAvailableSeats() - 1);
                 notRegisteredCourseList.remove(registeredCourse);
@@ -91,7 +94,7 @@ public class StudentPane extends GridPane {
         });
 
         drop.setOnMouseClicked(e -> {
-            Course droppedCourse = registered.getSelectionModel().getSelectedItem();
+            Course droppedCourse = registeredCourses.getSelectionModel().getSelectedItem();
             App.studentsList.get(studentCount).getCourses().remove(droppedCourse);
             droppedCourse.setAvailableSeats(droppedCourse.getAvailableSeats() + 1);
             getStudentDetails();
@@ -100,21 +103,18 @@ public class StudentPane extends GridPane {
 
     }
 
+    // this method gets the info from the ArrayList and puts them into the right place.
     void getStudentDetails() {
-        notRegisteredCourseList.clear();
+        notRegisteredCourseList.clear(); // refreshing the unregistered list.
         studentID.setText(App.studentsList.get(studentCount).getStudID());
         registeredCourseList = App.studentsList.get(studentCount).getCourses();
+        // putting every non-registered course into the comboBox.
         for(int i = 0; i < App.coursesList.size(); i++){
             if(!(registeredCourseList.contains(App.coursesList.get(i)))){
                 notRegisteredCourseList.add(App.coursesList.get(i));
             }
         }
-        notRegistered.setItems(FXCollections.observableArrayList(notRegisteredCourseList));
-        registered.setItems(FXCollections.observableArrayList(registeredCourseList));
+        nonRegisteredCourses.setItems(FXCollections.observableArrayList(notRegisteredCourseList));
+        registeredCourses.setItems(FXCollections.observableArrayList(registeredCourseList));
     }
-
-    Integer getStudentCount() {
-        return studentCount;
-    }
-
 }

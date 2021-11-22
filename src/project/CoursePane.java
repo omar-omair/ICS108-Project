@@ -19,16 +19,16 @@ public class CoursePane extends Pane {
     private TextField courseStatus = new TextField();
 
     CoursePane() {
-
+        // putting the info from the ArrayList to the ListView and making it a single selection only.
         courseList.setItems(FXCollections.observableArrayList(App.coursesList));
         courseList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        GridPane details = new GridPane();
-        details.setHgap(10);
-        details.setVgap(5);
+        
+
         Label[] labels = {new Label("ID"),new Label("Name"),
                          new Label("Days"),new Label("Location"), new Label("Time"),
                          new Label("Status")};
+
         TextField[] fields = {courseID,courseName,courseDays,courseLocation,courseTime,courseStatus};
         Button back = new Button("Back");
         Button previous = new Button("< previous");
@@ -37,16 +37,24 @@ public class CoursePane extends Pane {
         Button[] buttons = {back, previous, next, search};
         HBox buttonsHBox = new HBox(10);
 
+        // a grid for the labels and their TextFields
+        GridPane details = new GridPane();
+        details.setHgap(10);
+        details.setVgap(5);
+
+        // adding the Labels and their TextFields to the grid.
         for(int i=0; i<labels.length; i++){
            details.addColumn(0, labels[i]);
            details.addColumn(1, fields[i]);
            fields[i].setPrefWidth(270);
            if(i <= 3)
-            buttonsHBox.getChildren().add(buttons[i]);
+            buttonsHBox.getChildren().add(buttons[i]); // adding the buttons their button box.
         }
 
+        // adding all the nodes to the master pane.
         this.getChildren().addAll(details,courseList,studentList,buttonsHBox,numberLabel);
 
+        // putting the nodes in a specific coordinates in the master pane.
         studentList.setPrefHeight(350);
         details.setLayoutX(280);
         details.setLayoutY(100);
@@ -59,9 +67,10 @@ public class CoursePane extends Pane {
         numberLabel.setLayoutX(630);
         numberLabel.setLayoutY(38);
 
+        // button Handlers for back, previous, next, search.
         back.setOnAction(e -> {
             App.setToMain(App.primaryStage,App.primaryScene,App.mainBorderPane);
-            resetCourseMenu();
+            resetCourseMenu(); // to make the selection empty.
         });
 
         previous.setOnMouseClicked(e -> {
@@ -78,6 +87,7 @@ public class CoursePane extends Pane {
 
         search.setOnMouseClicked(e -> {
             String searched = courseID.getText();
+            // checking if there is a match with any of the courses.
             for (int i = 0; i < App.coursesList.size(); i++) {
                 if(searched.equals(App.coursesList.get(i).getCourseID())) {
                     courseList.getSelectionModel().select(i);
@@ -92,22 +102,7 @@ public class CoursePane extends Pane {
 
         });
         
-    }
-
-    void resetCourseMenu() {
-        ArrayList<String> empty = new ArrayList<String>();
-        courseList.getSelectionModel().clearSelection();
-        courseID.setText("");
-        courseName.setText("");
-        courseDays.setText("");
-        courseTime.setText("");
-        courseStatus.setText("");
-        courseLocation.setText("");
-        numberLabel.setText("");
-        studentList.setItems(FXCollections.observableArrayList(empty));
-    }
-    
-    void getInfo(){
+        // the ListView Listener that changes the Text of the TextFields depending on the current selection index. 
         courseList.getSelectionModel().selectedItemProperty().addListener(t -> {
 
             int courseIndex = courseList.getSelectionModel().getSelectedIndex();
@@ -140,6 +135,21 @@ public class CoursePane extends Pane {
             studentList.setItems(FXCollections.observableArrayList(registered));
         });
     }
+
+    // this method empties the student id ListView and every TextField in the course pane.
+    void resetCourseMenu() {
+        ArrayList<String> empty = new ArrayList<String>();
+        courseList.getSelectionModel().clearSelection();
+        courseID.setText("");
+        courseName.setText("");
+        courseDays.setText("");
+        courseTime.setText("");
+        courseStatus.setText("");
+        courseLocation.setText("");
+        numberLabel.setText("");
+        studentList.setItems(FXCollections.observableArrayList(empty));
+    }
+    
 }
 
 
