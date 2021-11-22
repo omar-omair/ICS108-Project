@@ -14,30 +14,26 @@ import java.io.*;
 
 public class App extends Application{
     private Label registerSystem = new Label("Registration System");
-    TextField courseID = new TextField();
-    TextField courseName = new TextField();
-    TextField courseDays = new TextField();
-    TextField courseLocation = new TextField();
-    TextField courseTime = new TextField();
-    TextField courseStatus = new TextField();
-    TextField studentID = new TextField();
-    ArrayList<Course> coursesList = new ArrayList<Course>();
-    ArrayList<Student> studentsList = new ArrayList<Student>();
+    static ArrayList<Course> coursesList = new ArrayList<Course>();
+    static ArrayList<Student> studentsList = new ArrayList<Student>();
     ArrayList<Course> notRegisteredCourseList = new ArrayList<>();
     ArrayList<Course> registeredCourseList = new ArrayList<>();
     ListView<Course> registered = new ListView<>();
-    ListView<Course> courseList = new ListView<>();
+    TextField studentID = new TextField();
     ComboBox<Course> notRegistered = new ComboBox<>();
-    ListView<String> studentList = new ListView<>();
-    Pane panel = new Pane();
-    Label numberLabel = new Label("");
     int studentCount = 0;
     Alert alert = new Alert(Alert.AlertType.ERROR);
-    
+    static Stage primaryStage;
+    static Scene PrimaryScene;
+    static BorderPane mainBorderPane;
 
     public void start(Stage stage) {
-        registerSystem.setFont(new Font(40));
         BorderPane borderPane = new BorderPane();
+        Scene main = new Scene(borderPane);
+        primaryStage = stage;
+        PrimaryScene = main;
+        mainBorderPane = borderPane;
+        registerSystem.setFont(new Font(40));
         borderPane.setCenter(registerSystem);
         HBox buttonBox = new HBox(10);
         Button course = new Button("View course");
@@ -47,7 +43,6 @@ public class App extends Application{
         buttonBox.setAlignment(Pos.CENTER);
         borderPane.setBottom(buttonBox);
         BorderPane.setMargin(buttonBox, new Insets(12,12,70,12));
-        Scene main = new Scene(borderPane);
 
         try(FileInputStream fis = new FileInputStream("res\\Registration.dat");
             ObjectInputStream ois = new ObjectInputStream(fis))
@@ -59,74 +54,8 @@ public class App extends Application{
             System.out.println(e);
         }
 
-
-        Scene courses = new Scene(panel);
-        courseList.setItems(FXCollections.observableArrayList(coursesList));
-        courseList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        GridPane details = new GridPane();
-        details.setHgap(10);
-        details.setVgap(5);
-        Label[] labels = {new Label("ID"),new Label("Name"),
-                         new Label("Days"),new Label("Location"), new Label("Time"),
-                         new Label("Status")};
-        TextField[] fields = {courseID,courseName,courseDays,courseLocation,courseTime,courseStatus};
-        Button back = new Button("Back");
-        Button previous = new Button("< previous");
-        Button next = new Button("Next >");
-        Button search = new Button("Search");
-        Button[] buttons = {back, previous, next, search};
-        HBox buttonHbox = new HBox(10);
-        for(int i=0; i<labels.length; i++){
-           details.addColumn(0, labels[i]);
-           details.addColumn(1, fields[i]);
-           fields[i].setPrefWidth(270);
-           if(i <= 3)
-            buttonHbox.getChildren().add(buttons[i]);
-        }
+        CoursePane coursePane = new CoursePane();
         
-        panel.getChildren().addAll(details,courseList,studentList,buttonHbox,numberLabel);
-        studentList.setPrefHeight(350);
-        details.setLayoutX(280);
-        details.setLayoutY(100);
-        studentList.setLayoutX(630);
-        studentList.setLayoutY(58);
-        courseList.setLayoutX(10);
-        courseList.setLayoutY(10);
-        buttonHbox.setLayoutY(430);
-        buttonHbox.setLayoutX(300);
-        numberLabel.setLayoutX(630);
-        numberLabel.setLayoutY(38);
-
-        courseList.getSelectionModel().selectedItemProperty().addListener(t -> {
-            int courseIndex = courseList.getSelectionModel().getSelectedIndex();
-            courseID.setText(coursesList.get(courseIndex).getCourseID());
-            courseName.setText(coursesList.get(courseIndex).getCourseName());
-            courseDays.setText(coursesList.get(courseIndex).getCourseDays());
-            courseTime.setText(coursesList.get(courseIndex).getCourseTime());
-            courseLocation.setText(coursesList.get(courseIndex).getCourseLocation());
-            if(coursesList.get(courseIndex).getAvailableSeats() == 0) {
-                courseStatus.setText("Closed");
-            }
-            else {
-                courseStatus.setText("Open");
-            }
-
-            ArrayList<String> registered = new ArrayList<String>();
-            int count = 0;
-            for(int i = 0; i< studentsList.size(); i++) {
-                for(int j =0; j < studentsList.get(i).getCourses().size(); j++) {
-                    if(studentsList.get(i).getCourses().get(j).getCourseID().equals(courseID.getText())) {
-                        registered.add(count, studentsList.get(i).getStudID());
-                        count++;
-                    }
-                }
-                
-            }
-            numberLabel.setText("There are " + (count+1) + " students registered in " + courseID.getText());
-            studentList.setItems(FXCollections.observableArrayList(registered));
-        });
-
-
 
         GridPane grid = new GridPane();
         grid.setVgap(15);
@@ -152,10 +81,8 @@ public class App extends Application{
 
 
         course.setOnAction(e -> {
-            stage.setScene(courses);
-            stage.setWidth(900);
-            stage.setHeight(500);
-            stage.setTitle("Courses");
+            setToCourse(primaryStage,PrimaryScene,coursePane);
+            coursePane.getInfo();
         });
 
         student.setOnAction(e -> {
@@ -175,39 +102,6 @@ public class App extends Application{
             catch(IOException ex) {
                 System.out.println(ex);
             }
-        });
-
-        back.setOnAction(e -> {
-            setToMain(stage, main);
-            resetCourseMenu();
-        });
-
-        previous.setOnMouseClicked(e -> {
-            if(courseList.getSelectionModel().getSelectedIndex() > 0) {
-                courseList.getSelectionModel().select(courseList.getSelectionModel().getSelectedIndex() - 1);
-            }
-        });
-
-        next.setOnMouseClicked(e -> {
-            if(courseList.getSelectionModel().getSelectedIndex() < coursesList.size() - 1) {
-                courseList.getSelectionModel().select(courseList.getSelectionModel().getSelectedIndex() + 1);
-            }
-        });
-
-        search.setOnMouseClicked(e -> {
-            String searched = courseID.getText();
-            for (int i = 0; i < coursesList.size(); i++) {
-                if(searched.equals(coursesList.get(i).getCourseID())) {
-                    courseList.getSelectionModel().select(i);
-                    break;
-                }
-                else if(i == coursesList.size() - 1) {
-                    alert.setHeaderText("Course not found");
-                    alert.setContentText("Try again with a different input or pick a course from the list");
-                    alert.show();
-                }
-            }
-
         });
 
 
@@ -286,25 +180,21 @@ public class App extends Application{
         registered.setItems(FXCollections.observableArrayList(registeredCourseList));
     }
 
-    void resetCourseMenu() {
-        ArrayList<String> empty = new ArrayList<String>();
-        courseList.getSelectionModel().clearSelection();
-        courseID.setText("");
-        courseName.setText("");
-        courseDays.setText("");
-        courseTime.setText("");
-        courseStatus.setText("");
-        courseLocation.setText("");
-        numberLabel.setText("");
-        studentList.setItems(FXCollections.observableArrayList(empty));
-    }
-
     void setToMain(Stage stage, Scene main) {
         stage.setScene(main);
         stage.setWidth(700);
         stage.setHeight(600);
         stage.setTitle("main");
     }
+
+    void setToCourse(Stage stage, Scene scene, CoursePane pane) {
+        scene.setRoot(pane);
+        stage.setWidth(900);
+        stage.setHeight(500);
+        stage.setTitle("Courses");
+    }
+
+   
 
     public static void main(String[] args) {
         launch();
