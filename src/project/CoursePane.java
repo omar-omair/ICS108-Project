@@ -1,34 +1,28 @@
 package project;
 
-import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.scene.Scene;
 import javafx.scene.layout.*;
-import javafx.scene.text.*;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
-import javafx.geometry.*;
 import java.util.*;
-import java.io.FileInputStream;
-import java.io.*;
+
 
 public class CoursePane extends Pane {
-    ListView<Course> courseList = new ListView<>();
-    ListView<String> studentList = new ListView<>();
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    Label numberLabel = new Label("");
-    TextField courseID = new TextField();
-    TextField courseName = new TextField();
-    TextField courseDays = new TextField();
-    TextField courseLocation = new TextField();
-    TextField courseTime = new TextField();
-    TextField courseStatus = new TextField();
-    TextField studentID = new TextField();
+
+    private ListView<Course> courseList = new ListView<>();
+    private ListView<String> studentList = new ListView<>();
+    private Label numberLabel = new Label("");
+    private TextField courseID = new TextField();
+    private TextField courseName = new TextField();
+    private TextField courseDays = new TextField();
+    private TextField courseLocation = new TextField();
+    private TextField courseTime = new TextField();
+    private TextField courseStatus = new TextField();
 
     CoursePane() {
 
         courseList.setItems(FXCollections.observableArrayList(App.coursesList));
         courseList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
         GridPane details = new GridPane();
         details.setHgap(10);
         details.setVgap(5);
@@ -41,17 +35,17 @@ public class CoursePane extends Pane {
         Button next = new Button("Next >");
         Button search = new Button("Search");
         Button[] buttons = {back, previous, next, search};
-        HBox buttonHbox = new HBox(10);
+        HBox buttonsHBox = new HBox(10);
 
         for(int i=0; i<labels.length; i++){
            details.addColumn(0, labels[i]);
            details.addColumn(1, fields[i]);
            fields[i].setPrefWidth(270);
            if(i <= 3)
-            buttonHbox.getChildren().add(buttons[i]);
+            buttonsHBox.getChildren().add(buttons[i]);
         }
-        
-        this.getChildren().addAll(details,courseList,studentList,buttonHbox,numberLabel);
+
+        this.getChildren().addAll(details,courseList,studentList,buttonsHBox,numberLabel);
 
         studentList.setPrefHeight(350);
         details.setLayoutX(280);
@@ -60,13 +54,13 @@ public class CoursePane extends Pane {
         studentList.setLayoutY(58);
         courseList.setLayoutX(10);
         courseList.setLayoutY(10);
-        buttonHbox.setLayoutY(430);
-        buttonHbox.setLayoutX(300);
+        buttonsHBox.setLayoutY(430);
+        buttonsHBox.setLayoutX(300);
         numberLabel.setLayoutX(630);
         numberLabel.setLayoutY(38);
 
         back.setOnAction(e -> {
-            setToMain(App.primaryStage,App.PrimaryScene,App.mainBorderPane);
+            App.setToMain(App.primaryStage,App.primaryScene,App.mainBorderPane);
             resetCourseMenu();
         });
 
@@ -90,9 +84,9 @@ public class CoursePane extends Pane {
                     break;
                 }
                 else if(i == App.coursesList.size() - 1) {
-                    alert.setHeaderText("Course not found");
-                    alert.setContentText("Try again with a different input or pick a course from the list");
-                    alert.show();
+                    App.alert.setHeaderText("Course not found");
+                    App.alert.setContentText("Try again with a different input or pick a course from the list");
+                    App.alert.show();
                 }
             }
 
@@ -111,14 +105,6 @@ public class CoursePane extends Pane {
         courseLocation.setText("");
         numberLabel.setText("");
         studentList.setItems(FXCollections.observableArrayList(empty));
-    }
-
-    void setToMain(Stage stage, Scene scene, BorderPane pane ) {
-        scene.setRoot(pane);
-        stage.setWidth(700);
-        stage.setHeight(600);
-        stage.setTitle("main");
-        
     }
     
     void getInfo(){

@@ -3,7 +3,7 @@ package project;
 import java.io.Serializable;
 
 import java.util.ArrayList;
-//Do not add/remove methods/variables to/from this calss
+//Do not add/remove methods/variables to/from this class
 
 public class Student implements Serializable{
     private String studID;
