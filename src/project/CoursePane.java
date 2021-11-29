@@ -8,8 +8,8 @@ import java.util.*;
 
 public class CoursePane extends Pane {
 
-    private ListView<Course> courseList = new ListView<>();
-    private ListView<String> studentList = new ListView<>();
+    private ListView<Course> courseListView = new ListView<>();
+    private ListView<String> studentListView = new ListView<>();
     private Label numberLabel = new Label("");
     private TextField courseID = new TextField();
     private TextField courseName = new TextField();
@@ -20,8 +20,8 @@ public class CoursePane extends Pane {
 
     CoursePane() {
         // putting the info from the ArrayList to the ListView and making it a single selection only.
-        courseList.setItems(FXCollections.observableArrayList(App.coursesList));
-        courseList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        courseListView.setItems(FXCollections.observableArrayList(App.coursesList));
+        courseListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         
 
@@ -48,20 +48,20 @@ public class CoursePane extends Pane {
            details.addColumn(1, fields[i]);
            fields[i].setPrefWidth(270);
            if(i <= 3)
-            buttonsHBox.getChildren().add(buttons[i]); // adding the buttons their button box.
+            buttonsHBox.getChildren().add(buttons[i]); // adding the buttons to their button box.
         }
 
         // adding all the nodes to the master pane.
-        this.getChildren().addAll(details,courseList,studentList,buttonsHBox,numberLabel);
+        this.getChildren().addAll(details,courseListView,studentListView,buttonsHBox,numberLabel);
 
         // putting the nodes in a specific coordinates in the master pane.
-        studentList.setPrefHeight(350);
+        studentListView.setPrefHeight(350);
         details.setLayoutX(280);
         details.setLayoutY(100);
-        studentList.setLayoutX(630);
-        studentList.setLayoutY(58);
-        courseList.setLayoutX(10);
-        courseList.setLayoutY(10);
+        studentListView.setLayoutX(630);
+        studentListView.setLayoutY(58);
+        courseListView.setLayoutX(10);
+        courseListView.setLayoutY(10);
         buttonsHBox.setLayoutY(430);
         buttonsHBox.setLayoutX(300);
         numberLabel.setLayoutX(630);
@@ -75,14 +75,14 @@ public class CoursePane extends Pane {
         });
 
         previous.setOnMouseClicked(e -> {
-            if(courseList.getSelectionModel().getSelectedIndex() > 0) {
-                courseList.getSelectionModel().select(courseList.getSelectionModel().getSelectedIndex() - 1);
+            if(courseListView.getSelectionModel().getSelectedIndex() > 0) {
+                courseListView.getSelectionModel().select(courseListView.getSelectionModel().getSelectedIndex() - 1);
             }
         });
 
         next.setOnMouseClicked(e -> {
-            if(courseList.getSelectionModel().getSelectedIndex() < App.coursesList.size() - 1) {
-                courseList.getSelectionModel().select(courseList.getSelectionModel().getSelectedIndex() + 1);
+            if(courseListView.getSelectionModel().getSelectedIndex() < App.coursesList.size() - 1) {
+                courseListView.getSelectionModel().select(courseListView.getSelectionModel().getSelectedIndex() + 1);
             }
         });
 
@@ -96,7 +96,7 @@ public class CoursePane extends Pane {
                 // checking if there is a match with any of the courses.
                 for (int i = 0; i < App.coursesList.size(); i++) {
                     if(searched.equals(App.coursesList.get(i).getCourseID())) {
-                        courseList.getSelectionModel().select(i);
+                        courseListView.getSelectionModel().select(i);
                         search.setText("Search");
                         break;
                     }
@@ -110,9 +110,9 @@ public class CoursePane extends Pane {
         });
         
         // the ListView Listener that changes the Text of the TextFields depending on the current selection index. 
-        courseList.getSelectionModel().selectedItemProperty().addListener(t -> {
+        courseListView.getSelectionModel().selectedItemProperty().addListener(t -> {
 
-            int courseIndex = courseList.getSelectionModel().getSelectedIndex();
+            int courseIndex = courseListView.getSelectionModel().getSelectedIndex();
             courseID.setText(App.coursesList.get(courseIndex).getCourseID());
             courseName.setText(App.coursesList.get(courseIndex).getCourseName());
             courseDays.setText(App.coursesList.get(courseIndex).getCourseDays());
@@ -139,7 +139,7 @@ public class CoursePane extends Pane {
             }
 
             numberLabel.setText("There are " + (count+1) + " students registered in " + courseID.getText());
-            studentList.setItems(FXCollections.observableArrayList(registered));
+            studentListView.setItems(FXCollections.observableArrayList(registered));
             search.setText("Search");
         });
     }
@@ -147,7 +147,7 @@ public class CoursePane extends Pane {
     // this method empties the student id ListView and every TextField in the course pane.
     void resetCourseMenu() {
         ArrayList<String> empty = new ArrayList<String>();
-        courseList.getSelectionModel().clearSelection();
+        courseListView.getSelectionModel().clearSelection();
         courseID.setText("");
         courseName.setText("");
         courseDays.setText("");
@@ -155,9 +155,7 @@ public class CoursePane extends Pane {
         courseStatus.setText("");
         courseLocation.setText("");
         numberLabel.setText("");
-        studentList.setItems(FXCollections.observableArrayList(empty));
+        studentListView.setItems(FXCollections.observableArrayList(empty));
     }
     
 }
-
-
