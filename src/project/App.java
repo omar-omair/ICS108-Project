@@ -6,10 +6,12 @@ import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.scene.paint.*;
 import javafx.geometry.*;
 import java.util.*;
 import java.io.FileInputStream;
 import java.io.*;
+
 
 public class App extends Application{
 

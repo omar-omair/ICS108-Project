@@ -70,6 +70,7 @@ public class CoursePane extends Pane {
         // button Handlers for back, previous, next, search.
         back.setOnAction(e -> {
             App.setToMain(App.primaryStage,App.primaryScene,App.mainBorderPane);
+            search.setText("Search");
             resetCourseMenu(); // to make the selection empty.
         });
 
@@ -86,20 +87,26 @@ public class CoursePane extends Pane {
         });
 
         search.setOnMouseClicked(e -> {
-            String searched = courseID.getText();
-            // checking if there is a match with any of the courses.
-            for (int i = 0; i < App.coursesList.size(); i++) {
-                if(searched.equals(App.coursesList.get(i).getCourseID())) {
-                    courseList.getSelectionModel().select(i);
-                    break;
-                }
-                else if(i == App.coursesList.size() - 1) {
-                    App.alert.setHeaderText("Course not found");
-                    App.alert.setContentText("Try again with a different input or pick a course from the list");
-                    App.alert.show();
-                }
+            if(search.getText() == "Search"){
+                resetCourseMenu();
+                search.setText("Go >>");
             }
-
+            else if(search.getText() == "Go >>") {
+                String searched = courseID.getText().toUpperCase();
+                // checking if there is a match with any of the courses.
+                for (int i = 0; i < App.coursesList.size(); i++) {
+                    if(searched.equals(App.coursesList.get(i).getCourseID())) {
+                        courseList.getSelectionModel().select(i);
+                        search.setText("Search");
+                        break;
+                    }
+                    else if(i == App.coursesList.size() - 1) {
+                        App.alert.setHeaderText("Course not found");
+                        App.alert.setContentText("Try again with a different input or pick a course from the list");
+                        App.alert.show();
+                    }
+                }
+        }
         });
         
         // the ListView Listener that changes the Text of the TextFields depending on the current selection index. 
@@ -133,6 +140,7 @@ public class CoursePane extends Pane {
 
             numberLabel.setText("There are " + (count+1) + " students registered in " + courseID.getText());
             studentList.setItems(FXCollections.observableArrayList(registered));
+            search.setText("Search");
         });
     }
 
