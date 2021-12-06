@@ -10,7 +10,7 @@ import javafx.geometry.*;
 import java.util.*;
 import java.io.FileInputStream;
 import java.io.*;
-
+import javafx.scene.image.*;
 
 public class App extends Application{
 
@@ -77,6 +77,7 @@ public class App extends Application{
         stage.setScene(primaryScene);
         stage.setWidth(700);
         stage.setHeight(600);
+        stage.getIcons().add(new Image("file:KFUPM-LOGO.png")); // an icon for the stage
         stage.show();
     }
 
