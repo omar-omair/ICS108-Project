@@ -74,6 +74,7 @@ public class StudentPane extends GridPane {
                     App.alert.setHeaderText("Student not found");
                     App.alert.setContentText("Try again with a different input");
                     App.alert.show();
+                    getStudentDetails();
                 }
             }
         });

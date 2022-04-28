@@ -75,6 +75,7 @@ public class App extends Application{
 
         // setting the stage.
         stage.setScene(primaryScene);
+        stage.setTitle("main");
         stage.setWidth(700);
         stage.setHeight(600);
         stage.getIcons().add(new Image("file:KFUPM-LOGO.png")); // an icon for the stage
